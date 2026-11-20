@@ -1,0 +1,448 @@
+Project eserlisans {
+  database_type: 'PostgreSQL'
+}
+
+Enum user_role {
+  publisher_staff
+  author
+  licensee
+  admin
+}
+
+Enum organization_type {
+  publisher
+  licensee
+}
+
+Enum approval_status {
+  pending
+  approved
+  rejected
+}
+
+Enum catalog_source {
+  seed
+  google_books
+  open_library
+  manual
+}
+
+Enum work_metadata_source {
+  local_catalog
+  google_books
+  open_library
+  manual
+}
+
+Enum work_status {
+  pending_approval
+  licensable
+  unavailable
+}
+
+Enum permission_level {
+  academic_only
+  commercial_included
+  unavailable
+}
+
+Enum terms_status {
+  proposed
+  revision_requested
+  approved
+  superseded
+}
+
+Enum approval_decision {
+  approved
+  revision_requested
+}
+
+Enum intended_use {
+  academic_noncommercial
+  commercial
+}
+
+Enum request_status {
+  requested
+  awaiting_approval
+  approved
+  awaiting_payment
+  active
+  expired
+  rejected
+}
+
+Enum approval_party {
+  author
+  publisher
+}
+
+Enum request_decision {
+  approved
+  rejected
+}
+
+Enum payment_status {
+  pending
+  succeeded
+  failed
+}
+
+Enum payment_provider {
+  internal_simulation
+  iyzico_sandbox
+}
+
+Enum payment_failure_reason {
+  insufficient_funds
+  invalid_card
+  suspected_fraud
+  provider_error
+}
+
+Enum recipient_type {
+  author
+  publisher
+  platform
+}
+
+Enum invitation_status {
+  pending
+  accepted
+  expired
+  cancelled
+}
+
+Enum ai_usage_type {
+  pretraining
+  fine_tuning
+  evaluation
+  other
+}
+
+Table organizations {
+  id bigint [pk, increment]
+  type organization_type [not null]
+  name varchar(200) [not null]
+  tax_or_mersis_no varchar(20) [not null, unique]
+  corporate_email varchar(254) [not null]
+  approval_status approval_status [not null, default: 'pending']
+  reviewed_at timestamptz [null]
+  rejection_reason text [null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+}
+
+Table users {
+  id bigint [pk, increment]
+  email varchar(254) [not null]
+  password_hash varchar(255) [not null]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  role user_role [not null]
+  organization_id bigint [null]
+  author_code varchar(20) [null, unique]
+  is_active boolean [not null, default: true]
+  privacy_notice_accepted_at timestamptz [not null]
+  pilot_consent_at timestamptz [null]
+  deleted_at timestamptz [null]
+  anonymized_at timestamptz [null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  Note: '''
+  UNIQUE INDEX ON users (lower(email))
+  CHECK: (role = 'author') = (author_code IS NOT NULL)
+  CHECK: role <> 'publisher_staff' OR organization_id IS NOT NULL
+  '''
+}
+
+Table invitations {
+  id bigint [pk, increment]
+  email varchar(254) [not null]
+  invited_by_user_id bigint [not null]
+  work_id bigint [not null]
+  split_percent numeric(5,2) [not null, default: 100]
+  token_hash char(64) [not null, unique]
+  status invitation_status [not null, default: 'pending']
+  expires_at timestamptz [not null]
+  accepted_user_id bigint [null]
+  created_at timestamptz [not null, default: `now()`]
+
+  Note: '''
+  CHECK: split_percent > 0 AND split_percent <= 100
+  PARTIAL UNIQUE INDEX ON invitations (work_id, lower(email)) WHERE status = 'pending'
+  '''
+}
+
+Table isbn_catalog {
+  isbn char(13) [pk]
+  title varchar(300) [not null]
+  authors_text varchar(500) [null]
+  publisher_name varchar(200) [null]
+  publication_year smallint [null]
+  language_code varchar(10) [not null, default: 'tr']
+  category varchar(100) [null]
+  source catalog_source [not null]
+  raw_payload jsonb [null]
+  fetched_at timestamptz [not null, default: `now()`]
+
+  Note: 'GIN index (pg_trgm) on title'
+}
+
+Table works {
+  id bigint [pk, increment]
+  isbn char(13) [not null, unique]
+  title varchar(300) [not null]
+  publisher_org_id bigint [not null]
+  publication_year smallint [null]
+  language_code varchar(10) [not null, default: 'tr']
+  category varchar(100) [null]
+  metadata_source work_metadata_source [not null]
+  status work_status [not null, default: 'pending_approval']
+  registered_by_user_id bigint [not null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    status
+    publisher_org_id
+  }
+
+  Note: '''
+  CHECK: isbn ~ '^[0-9]{13}$'
+  GIN index (pg_trgm) on title
+  '''
+}
+
+Table work_authors {
+  work_id bigint [not null]
+  author_id bigint [not null]
+  split_percent numeric(5,2) [not null, default: 100]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (work_id, author_id) [pk]
+    author_id
+  }
+
+  Note: 'CHECK: split_percent > 0 AND split_percent <= 100'
+}
+
+Table license_terms {
+  id bigint [pk, increment]
+  work_id bigint [not null]
+  version_no integer [not null]
+  permission_level permission_level [not null]
+  fee_amount numeric(12,2) [not null, default: 0]
+  currency char(3) [not null, default: 'TRY']
+  duration_months smallint [not null, default: 36]
+  author_share_pct numeric(5,2) [not null]
+  publisher_share_pct numeric(5,2) [not null]
+  status terms_status [not null, default: 'proposed']
+  proposed_by_user_id bigint [not null]
+  revision_note text [null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (work_id, version_no) [unique]
+    work_id
+  }
+
+  Note: '''
+  CHECK: fee_amount >= 0
+  CHECK: duration_months > 0
+  CHECK: author_share_pct + publisher_share_pct = 100
+  PARTIAL UNIQUE INDEX ON license_terms (work_id) WHERE status = 'approved'
+  '''
+}
+
+Table terms_approvals {
+  id bigint [pk, increment]
+  terms_id bigint [not null]
+  author_id bigint [not null]
+  decision approval_decision [not null]
+  comment text [null]
+  decided_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (terms_id, author_id) [unique]
+  }
+}
+
+Table license_requests {
+  id bigint [pk, increment]
+  work_id bigint [not null]
+  terms_id bigint [not null]
+  licensee_user_id bigint [not null]
+  licensee_org_id bigint [null]
+  intended_use intended_use [not null]
+  purpose_description text [not null]
+  status request_status [not null, default: 'requested']
+  rejection_reason text [null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    status
+    work_id
+    licensee_user_id
+  }
+}
+
+Table request_approvals {
+  id bigint [pk, increment]
+  request_id bigint [not null]
+  party approval_party [not null]
+  user_id bigint [not null]
+  decision request_decision [not null]
+  comment text [null]
+  decided_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (request_id, user_id) [unique]
+  }
+}
+
+Table licenses {
+  id bigint [pk, increment]
+  request_id bigint [not null, unique]
+  license_number varchar(30) [not null, unique]
+  contract_template_version varchar(32) [not null, default: 'v1.0']
+  is_sample_contract boolean [not null, default: true]
+  starts_on date [not null]
+  ends_on date [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  Note: 'CHECK: ends_on > starts_on'
+}
+
+Table payments {
+  id bigint [pk, increment]
+  request_id bigint [not null]
+  amount numeric(12,2) [not null]
+  currency char(3) [not null, default: 'TRY']
+  status payment_status [not null, default: 'pending']
+  provider payment_provider [not null]
+  provider_reference varchar(100) [null]
+  failure_reason payment_failure_reason [null]
+  idempotency_key varchar(64) [not null, unique]
+  created_at timestamptz [not null, default: `now()`]
+  completed_at timestamptz [null]
+
+  indexes {
+    request_id
+  }
+
+  Note: '''
+  CHECK: amount > 0
+  CHECK: (status = 'failed') = (failure_reason IS NOT NULL)
+  PARTIAL UNIQUE INDEX ON payments (request_id) WHERE status = 'succeeded'
+  '''
+}
+
+Table revenue_shares {
+  id bigint [pk, increment]
+  payment_id bigint [not null]
+  recipient_type recipient_type [not null]
+  recipient_user_id bigint [null]
+  recipient_org_id bigint [null]
+  share_percent numeric(7,4) [not null]
+  amount numeric(12,2) [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    payment_id
+    recipient_user_id
+    recipient_org_id
+  }
+
+  Note: '''
+  UNIQUE NULLS NOT DISTINCT (payment_id, recipient_type, recipient_user_id, recipient_org_id)
+  CHECK: (recipient_type = 'author' AND recipient_user_id IS NOT NULL AND recipient_org_id IS NULL)
+      OR (recipient_type = 'publisher' AND recipient_org_id IS NOT NULL AND recipient_user_id IS NULL)
+      OR (recipient_type = 'platform' AND recipient_user_id IS NULL AND recipient_org_id IS NULL)
+  '''
+}
+
+Table usage_reports {
+  id bigint [pk, increment]
+  license_id bigint [not null]
+  reported_by_user_id bigint [not null]
+  usage_type ai_usage_type [not null]
+  period_start date [not null]
+  period_end date [not null]
+  model_name varchar(200) [null]
+  description text [not null]
+  declaration_accepted boolean [not null]
+  reported_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    license_id
+  }
+
+  Note: '''
+  CHECK: period_end >= period_start
+  CHECK: declaration_accepted = true
+  '''
+}
+
+Table audit_log {
+  id bigint [pk, increment]
+  occurred_at timestamptz [not null, default: `now()`]
+  actor_user_id bigint [null]
+  action varchar(60) [not null]
+  entity_type varchar(40) [not null]
+  entity_id varchar(64) [null]
+  old_value jsonb [null]
+  new_value jsonb [null]
+  ip_address inet [null]
+
+  indexes {
+    (entity_type, entity_id)
+    actor_user_id
+    occurred_at
+  }
+
+  Note: 'Append-only (UPDATE, DELETE, TRUNCATE triggers)'
+}
+
+Ref: users.organization_id > organizations.id [delete: restrict]
+
+Ref: invitations.invited_by_user_id > users.id [delete: restrict]
+Ref: invitations.work_id > works.id [delete: restrict]
+Ref: invitations.accepted_user_id > users.id [delete: restrict]
+
+Ref: works.publisher_org_id > organizations.id [delete: restrict]
+Ref: works.registered_by_user_id > users.id [delete: restrict]
+
+Ref: work_authors.work_id > works.id [delete: restrict]
+Ref: work_authors.author_id > users.id [delete: restrict]
+
+Ref: license_terms.work_id > works.id [delete: restrict]
+Ref: license_terms.proposed_by_user_id > users.id [delete: restrict]
+
+Ref: terms_approvals.terms_id > license_terms.id [delete: restrict]
+Ref: terms_approvals.author_id > users.id [delete: restrict]
+
+Ref: license_requests.work_id > works.id [delete: restrict]
+Ref: license_requests.terms_id > license_terms.id [delete: restrict]
+Ref: license_requests.licensee_user_id > users.id [delete: restrict]
+Ref: license_requests.licensee_org_id > organizations.id [delete: restrict]
+
+Ref: request_approvals.request_id > license_requests.id [delete: restrict]
+Ref: request_approvals.user_id > users.id [delete: restrict]
+
+Ref: licenses.request_id - license_requests.id [delete: restrict]
+
+Ref: payments.request_id > license_requests.id [delete: restrict]
+
+Ref: revenue_shares.payment_id > payments.id [delete: restrict]
+Ref: revenue_shares.recipient_user_id > users.id [delete: restrict]
+Ref: revenue_shares.recipient_org_id > organizations.id [delete: restrict]
+
+Ref: usage_reports.license_id > licenses.id [delete: restrict]
+Ref: usage_reports.reported_by_user_id > users.id [delete: restrict]
+
+Ref: audit_log.actor_user_id > users.id [delete: restrict]
