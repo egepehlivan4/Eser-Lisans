@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ForeignKey, Index, String, func
+from sqlalchemy import ForeignKey, Index, String, event, func
 from sqlalchemy.dialects.postgresql import INET, JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from app.models.base import Base, pk_column
 
@@ -34,3 +34,23 @@ class AuditLog(Base):
         Index("ix_audit_log_entity", "entity_type", "entity_id"),
         Index("ix_audit_log_occurred_at", "occurred_at"),
     )
+
+
+@event.listens_for(AuditLog, "before_update")
+def _forbid_audit_update(mapper, connection, target) -> None:
+    raise PermissionError("audit_log records are immutable: UPDATE is forbidden.")
+
+
+@event.listens_for(AuditLog, "before_delete")
+def _forbid_audit_delete(mapper, connection, target) -> None:
+    raise PermissionError("audit_log records are immutable: DELETE is forbidden.")
+
+
+@event.listens_for(Session, "do_orm_execute")
+def _forbid_audit_bulk_mutation(execute_state) -> None:
+    if execute_state.is_update or execute_state.is_delete:
+        target_table = getattr(execute_state.statement, "table", None)
+        if target_table is not None and target_table.name == AuditLog.__tablename__:
+            raise PermissionError(
+                "audit_log table is immutable: bulk UPDATE/DELETE is forbidden."
+            )

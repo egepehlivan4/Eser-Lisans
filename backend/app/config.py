@@ -8,6 +8,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
     database_url: str
+    migration_database_url: str | None = None
 
 
 settings = Settings()
