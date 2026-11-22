@@ -1,0 +1,20 @@
+# Geliştirme için PostgreSQL. Çalıştırma: docker compose up -d
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: eserlisans
+      POSTGRES_PASSWORD: eserlisans   # yalnızca yerel geliştirme için; sunucuda değiştirin
+      POSTGRES_DB: eserlisans
+    ports:
+      - "55432:5432"   # bilgisayarda kurulu PostgreSQL ile çakışmasın diye 55432
+    volumes:
+      - eserlisans_pg:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eserlisans"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  eserlisans_pg:
