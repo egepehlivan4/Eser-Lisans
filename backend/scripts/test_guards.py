@@ -4,7 +4,7 @@ from decimal import Decimal
 from sqlalchemy import delete, text, update
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
-from app.db import SessionLocal
+from app.database import OturumFabrikasi
 from app.models import (
     AuditLog,
     LicenseRequest,
@@ -44,7 +44,7 @@ def expect_error(session, label, exc_type, action):
 
 
 def main() -> None:
-    session = SessionLocal()
+    session = OturumFabrikasi()
     try:
         pub_org = Organization(
             type=OrganizationType.PUBLISHER,

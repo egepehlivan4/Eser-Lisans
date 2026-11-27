@@ -1,26 +1,10 @@
 from datetime import datetime
-from decimal import Decimal
 from enum import StrEnum
 
-from sqlalchemy import BigInteger, Enum as SAEnum, Identity, MetaData, Numeric, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.types import TIMESTAMP
+from sqlalchemy import BigInteger, Enum as SAEnum, Identity, func
+from sqlalchemy.orm import Mapped, mapped_column
 
-NAMING_CONVENTION = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s",
-}
-
-
-class Base(DeclarativeBase):
-    metadata = MetaData(naming_convention=NAMING_CONVENTION)
-    type_annotation_map = {
-        datetime: TIMESTAMP(timezone=True),
-        Decimal: Numeric(12, 2),
-    }
+from app.database import Base  # noqa: F401
 
 
 def pk_column():

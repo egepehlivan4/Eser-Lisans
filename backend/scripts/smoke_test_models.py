@@ -4,7 +4,7 @@ from decimal import Decimal
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from app.db import SessionLocal
+from app.database import OturumFabrikasi
 from app.models import (
     AuditLog,
     Invitation,
@@ -71,7 +71,7 @@ def expect_violation(session, label, build):
 
 
 def main() -> None:
-    session = SessionLocal()
+    session = OturumFabrikasi()
     try:
         print("1) Normal akis testi")
         pub_org = Organization(
