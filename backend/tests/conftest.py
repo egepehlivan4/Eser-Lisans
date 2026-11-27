@@ -15,7 +15,7 @@ from sqlalchemy.dialects.postgresql import INET, JSONB
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
-from sqlalchemy.schema import CreateTable
+from sqlalchemy.schema import CreateIndex, CreateTable
 
 import app.models  # noqa: F401 — tüm modellerin Base.metadata'ya kaydı için
 from app.core.security import hash_password, login_rate_limiter
@@ -25,7 +25,7 @@ from app.models.enums import ApprovalStatus, OrganizationType, UserRole
 from app.models.identity import Organization, User
 
 
-# --- PostgreSQL tiplerinin ve kısıtlarının SQLite test ortamına uyarlanması ---
+# --- PostgreSQL tiplerinin, kısıtlarının ve kısmi indekslerinin SQLite uyarlaması ---
 @compiles(JSONB, "sqlite")
 def _compile_jsonb_sqlite(type_, compiler, **kw):
     return "JSON"
@@ -46,6 +46,16 @@ def _compile_create_table_sqlite(element, compiler, **kw):
     ddl = compiler.visit_create_table(element, **kw)
     ddl = re.sub(r"isbn\s*~\s*'\^\[0-9\]\{13\}\$'", "length(isbn) = 13", ddl)
     ddl = ddl.replace("char_length(token_hash) = 64", "length(token_hash) = 64")
+    return ddl
+
+
+@compiles(CreateIndex, "sqlite")
+def _compile_create_index_sqlite(element, compiler, **kw):
+    ddl = compiler.visit_create_index(element, **kw)
+    pg_where = element.element.dialect_options["postgresql"].get("where")
+    if pg_where is not None and " WHERE " not in ddl.upper():
+        where_sql = compiler.sql_compiler.process(pg_where, literal_binds=True)
+        ddl = f"{ddl} WHERE {where_sql}"
     return ddl
 
 
