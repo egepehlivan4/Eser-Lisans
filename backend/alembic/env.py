@@ -1,9 +1,7 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 config = context.config
 
@@ -12,15 +10,23 @@ if config.config_file_name is not None:
 
 from app.config import ayarlar
 from app.database import Base
+
 try:
     import app.models  # noqa: F401  (modellerin Base.metadata'ya kaydolması için)
 except ModuleNotFoundError as hata:
     if hata.name != "app.models":
         raise
-    # Proje iskeletinde henüz model yok; modeller eklenince otomatik içe aktarılır.
 
-config.set_main_option("sqlalchemy.url", ayarlar().database_url.replace("%", "%%"))
+_ayar = ayarlar()
+_url = _ayar.migration_database_url or _ayar.database_url
+config.set_main_option("sqlalchemy.url", _url.replace("%", "%%"))
 target_metadata = Base.metadata
+
+
+def include_object(obj, name, type_, reflected, compare_to):
+    if type_ == "index" and name and name.endswith("_trgm"):
+        return False
+    return True
 
 
 def run_migrations_offline() -> None:
@@ -33,6 +39,7 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
         compare_server_default=True,
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -53,6 +60,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             compare_type=True,
             compare_server_default=True,
+            include_object=include_object,
         )
 
         with context.begin_transaction():

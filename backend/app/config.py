@@ -9,6 +9,7 @@ class Ayarlar(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     database_url: str = "postgresql+psycopg://eserlisans:eserlisans@localhost:55432/eserlisans"
+    migration_database_url: str | None = None
     jwt_gizli_anahtar: str = "gelistirme-ortami-icin-varsayilan-anahtar-degistirin"
     jwt_algoritma: str = "HS256"
     jwt_sure_dakika: int = 60
