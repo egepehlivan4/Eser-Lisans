@@ -12,14 +12,14 @@ from sqlalchemy.orm import Session
 
 from app.config import ayarlar
 from app.database import get_db
-from app.routers import admin, auth, works
+from app.routers import admin, auth, licensing, works
 
 logging.basicConfig(level=logging.INFO)  # e-posta bildirimleri geliştirme ortamında terminale yazılır
 
 app = FastAPI(
     title="EserLisans API",
     description="ISBN tabanlı yapay zekâ eğitim lisanslama ve telif paylaşım platformu",
-    version="0.4.0",
+    version="0.5.0",
 )
 
 app.add_middleware(
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(works.router)
+app.include_router(licensing.router)
 
 
 @app.get("/api/saglik", tags=["Sistem"], summary="Servis ayakta mı?")
