@@ -10,6 +10,8 @@ class Ayarlar(BaseSettings):
 
     database_url: str = "postgresql+psycopg://eserlisans:eserlisans@localhost:55432/eserlisans"
     migration_database_url: str | None = None
+    seed_password: str = ""
+    seed_admin_email: str = "admin@eserlisans.example"
     jwt_gizli_anahtar: str = "gelistirme-ortami-icin-varsayilan-anahtar-degistirin"
     jwt_algoritma: str = "HS256"
     jwt_sure_dakika: int = 60
