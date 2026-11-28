@@ -82,7 +82,7 @@ def main() -> None:
             approval_status=ApprovalStatus.APPROVED,
         )
         pub_user = new_user("yetkili@yayinevi.example", UserRole.PUBLISHER_STAFF, org=pub_org)
-        author = new_user("yazar@example.org", UserRole.AUTHOR, author_code="YZR-000001")
+        author = new_user("yazar@example.org", UserRole.AUTHOR, author_code="YZR-999901")
         licensee = new_user("alici@example.org", UserRole.LICENSEE)
 
         work = Work(
@@ -160,7 +160,8 @@ def main() -> None:
 
         lic = License(
             request=req,
-            license_number="EL-2026-000001",
+            license_number="EL-2026-999901" \
+            "",
             starts_on=date(2026, 12, 20),
             ends_on=date(2029, 12, 20),
         )

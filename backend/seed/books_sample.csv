@@ -1,0 +1,61 @@
+isbn,title,authors,publisher,year
+9790100000017,Veri Bilimi: Giriş,Örnek Yazar 01,Numune Kitabevi,2022
+9790100000024,Veri Bilimi: Uygulamalı Çözümler,Örnek Yazar 02,Deneme Yayıncılık,2018
+9790100000031,Veri Bilimi: Ders Notları,Örnek Yazar 03,Taslak Basım,2025
+9790100000048,Veri Bilimi: Soru ve Cevaplarla,Örnek Yazar 04,Örnek Yayınları,2021
+9790100000055,Yapay Zekâ: Giriş,Örnek Yazar 05; Örnek Yazar 06,Numune Kitabevi,2017
+9790100000062,Yapay Zekâ: Uygulamalı Çözümler,Örnek Yazar 06,Deneme Yayıncılık,2024
+9790100000079,Yapay Zekâ: Ders Notları,Örnek Yazar 07,Taslak Basım,2020
+9790100000086,Yapay Zekâ: Soru ve Cevaplarla,Örnek Yazar 08,Örnek Yayınları,2016
+9790100000093,Doğal Dil İşleme: Giriş,Örnek Yazar 09,Numune Kitabevi,2023
+9790100000109,Doğal Dil İşleme: Uygulamalı Çözümler,Örnek Yazar 10; Örnek Yazar 11,Deneme Yayıncılık,2019
+9790100000116,Doğal Dil İşleme: Ders Notları,Örnek Yazar 11,Taslak Basım,2015
+9790100000123,Doğal Dil İşleme: Soru ve Cevaplarla,Örnek Yazar 12,Örnek Yayınları,2022
+9790100000130,Yazılım Mühendisliği: Giriş,Örnek Yazar 01,Numune Kitabevi,2018
+9790100000147,Yazılım Mühendisliği: Uygulamalı Çözümler,Örnek Yazar 02,Deneme Yayıncılık,2025
+9790100000154,Yazılım Mühendisliği: Ders Notları,Örnek Yazar 03; Örnek Yazar 04,Taslak Basım,2021
+9790100000161,Yazılım Mühendisliği: Soru ve Cevaplarla,Örnek Yazar 04,Örnek Yayınları,2017
+9790100000178,Veritabanı Sistemleri: Giriş,Örnek Yazar 05,Numune Kitabevi,2024
+9790100000185,Veritabanı Sistemleri: Uygulamalı Çözümler,Örnek Yazar 06,Deneme Yayıncılık,2020
+9790100000192,Veritabanı Sistemleri: Ders Notları,Örnek Yazar 07,Taslak Basım,2016
+9790100000208,Veritabanı Sistemleri: Soru ve Cevaplarla,Örnek Yazar 08; Örnek Yazar 09,Örnek Yayınları,2023
+9790100000215,Bilgisayar Ağları: Giriş,Örnek Yazar 09,Numune Kitabevi,2019
+9790100000222,Bilgisayar Ağları: Uygulamalı Çözümler,Örnek Yazar 10,Deneme Yayıncılık,2015
+9790100000239,Bilgisayar Ağları: Ders Notları,Örnek Yazar 11,Taslak Basım,2022
+9790100000246,Bilgisayar Ağları: Soru ve Cevaplarla,Örnek Yazar 12,Örnek Yayınları,2018
+9790100000253,Siber Güvenlik: Giriş,Örnek Yazar 01; Örnek Yazar 02,Numune Kitabevi,2025
+9790100000260,Siber Güvenlik: Uygulamalı Çözümler,Örnek Yazar 02,Deneme Yayıncılık,2021
+9790100000277,Siber Güvenlik: Ders Notları,Örnek Yazar 03,Taslak Basım,2017
+9790100000284,Siber Güvenlik: Soru ve Cevaplarla,Örnek Yazar 04,Örnek Yayınları,2024
+9790100000291,Algoritmalar: Giriş,Örnek Yazar 05,Numune Kitabevi,2020
+9790100000307,Algoritmalar: Uygulamalı Çözümler,Örnek Yazar 06; Örnek Yazar 07,Deneme Yayıncılık,2016
+9790100000314,Algoritmalar: Ders Notları,Örnek Yazar 07,Taslak Basım,2023
+9790100000321,Algoritmalar: Soru ve Cevaplarla,Örnek Yazar 08,Örnek Yayınları,2019
+9790100000338,İşletim Sistemleri: Giriş,Örnek Yazar 09,Numune Kitabevi,2015
+9790100000345,İşletim Sistemleri: Uygulamalı Çözümler,Örnek Yazar 10,Deneme Yayıncılık,2022
+9790100000352,İşletim Sistemleri: Ders Notları,Örnek Yazar 11; Örnek Yazar 12,Taslak Basım,2018
+9790100000369,İşletim Sistemleri: Soru ve Cevaplarla,Örnek Yazar 12,Örnek Yayınları,2025
+9790100000376,Makine Öğrenmesi: Giriş,Örnek Yazar 01,Numune Kitabevi,2021
+9790100000383,Makine Öğrenmesi: Uygulamalı Çözümler,Örnek Yazar 02,Deneme Yayıncılık,2017
+9790100000390,Makine Öğrenmesi: Ders Notları,Örnek Yazar 03,Taslak Basım,2024
+9790100000406,Makine Öğrenmesi: Soru ve Cevaplarla,Örnek Yazar 04; Örnek Yazar 05,Örnek Yayınları,2020
+9790100000413,Elektrik Devreleri: Giriş,Örnek Yazar 05,Numune Kitabevi,2016
+9790100000420,Elektrik Devreleri: Uygulamalı Çözümler,Örnek Yazar 06,Deneme Yayıncılık,2023
+9790100000437,Elektrik Devreleri: Ders Notları,Örnek Yazar 07,Taslak Basım,2019
+9790100000444,Elektrik Devreleri: Soru ve Cevaplarla,Örnek Yazar 08,Örnek Yayınları,2015
+9790100000451,Sayısal Analiz: Giriş,Örnek Yazar 09; Örnek Yazar 10,Numune Kitabevi,2022
+9790100000468,Sayısal Analiz: Uygulamalı Çözümler,Örnek Yazar 10,Deneme Yayıncılık,2018
+9790100000475,Sayısal Analiz: Ders Notları,Örnek Yazar 11,Taslak Basım,2025
+9790100000482,Sayısal Analiz: Soru ve Cevaplarla,Örnek Yazar 12,Örnek Yayınları,2021
+9790100000499,Olasılık ve İstatistik: Giriş,Örnek Yazar 01,Numune Kitabevi,2017
+9790100000505,Olasılık ve İstatistik: Uygulamalı Çözümler,Örnek Yazar 02; Örnek Yazar 03,Deneme Yayıncılık,2024
+9790100000512,Olasılık ve İstatistik: Ders Notları,Örnek Yazar 03,Taslak Basım,2020
+9790100000529,Olasılık ve İstatistik: Soru ve Cevaplarla,Örnek Yazar 04,Örnek Yayınları,2016
+9790100000536,Fikir ve Sanat Hukuku: Giriş,Örnek Yazar 05,Numune Kitabevi,2023
+9790100000543,Fikir ve Sanat Hukuku: Uygulamalı Çözümler,Örnek Yazar 06,Deneme Yayıncılık,2019
+9790100000550,Fikir ve Sanat Hukuku: Ders Notları,Örnek Yazar 07; Örnek Yazar 08,Taslak Basım,2015
+9790100000567,Fikir ve Sanat Hukuku: Soru ve Cevaplarla,Örnek Yazar 08,Örnek Yayınları,2022
+9790100000574,Yayıncılık Tarihi: Giriş,Örnek Yazar 09,Numune Kitabevi,2018
+9790100000581,Yayıncılık Tarihi: Uygulamalı Çözümler,Örnek Yazar 10,Deneme Yayıncılık,2025
+9790100000598,Yayıncılık Tarihi: Ders Notları,Örnek Yazar 11,Taslak Basım,2021
+9790100000604,Yayıncılık Tarihi: Soru ve Cevaplarla,Örnek Yazar 12; Örnek Yazar 01,Örnek Yayınları,2017
